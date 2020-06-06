@@ -205,7 +205,7 @@ static void _GBCoreLoadConfig(struct mCore* core, const struct mCoreConfig* conf
 	mCoreConfigCopyValue(&core->config, config, "gbc.bios");
 	mCoreConfigCopyValue(&core->config, config, "gb.model");
 	mCoreConfigCopyValue(&core->config, config, "sgb.model");
-	mCoreConfigCopyValue(&core->config, config, "cgb.model");
+	mCoreConfigCopyValue(&core->config, config, "cgb.model");    // It seems like there's no option for "AGB" model
 	mCoreConfigCopyValue(&core->config, config, "useCgbColors");
 	mCoreConfigCopyValue(&core->config, config, "allowOpposingDirections");
 

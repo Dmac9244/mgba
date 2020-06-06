@@ -125,6 +125,11 @@ struct GBAudioWaveChannel {
 		uint8_t wavedata8[16];
 	};
 	int8_t sample;
+
+	// added for GBA 2 bank Audio
+	bool bankMode;
+	bool bankNum;
+	uint wavedata2[2][8];
 };
 
 struct GBAudioNoiseChannel {

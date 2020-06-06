@@ -157,7 +157,7 @@ void GBAAudioWriteSOUND2CNT_HI(struct GBAAudio* audio, uint16_t value) {
 	GBAudioWriteNR24(&audio->psg, value >> 8);
 }
 
-void GBAAudioWriteSOUND3CNT_LO(struct GBAAudio* audio, uint16_t value) {
+void GBAAudioWriteSOUND3CNT_LO(struct GBAAudio* audio, uint16_t value) { // It seems like there is code here already for having 2 banks. I wish I knew where the Get functions were coming from.
 	audio->psg.ch3.size = GBAudioRegisterBankGetSize(value);
 	audio->psg.ch3.bank = GBAudioRegisterBankGetBank(value);
 	GBAudioWriteNR30(&audio->psg, value);
@@ -216,7 +216,7 @@ void GBAAudioWriteSOUNDBIAS(struct GBAAudio* audio, uint16_t value) {
 }
 
 void GBAAudioWriteWaveRAM(struct GBAAudio* audio, int address, uint32_t value) {
-	audio->psg.ch3.wavedata32[address | (!audio->psg.ch3.bank * 4)] = value;
+	audio->psg.ch3.wavedata32[address | (!audio->psg.ch3.bank * 4)] = value; // It seems like this is the place where I have to add in the 2 bank option.
 }
 
 void GBAAudioWriteFIFO(struct GBAAudio* audio, int address, uint32_t value) {

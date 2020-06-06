@@ -64,7 +64,7 @@ static void GBInit(void* cpu, struct mCPUComponent* component) {
 	GBVideoInit(&gb->video);
 
 	gb->audio.p = gb;
-	GBAudioInit(&gb->audio, 2048, &gb->memory.io[REG_NR52], GB_AUDIO_DMG); // TODO: Remove magic constant
+	GBAudioInit(&gb->audio, 2048, &gb->memory.io[REG_NR52], GB_AUDIO_AGB); // TODO: Remove magic constant  This should initialize the type of audio based on what model GB we have chosen (after autodetect) -- Autodetect should happen before this.
 
 	gb->sio.p = gb;
 	GBSIOInit(&gb->sio);
@@ -643,6 +643,7 @@ void GBDetectModel(struct GB* gb) {
 		gb->audio.style = GB_AUDIO_MGB;
 		break;
 	case GB_MODEL_AGB:
+		gb->audio.style = GB_AUDIO_AGB; //Added for GBA audio in GB games
 	case GB_MODEL_CGB:
 		gb->audio.style = GB_AUDIO_CGB;
 		break;

@@ -72,7 +72,7 @@ enum GBAIORegisters {
 	REG_SOUNDCNT_HI = 0x082,
 	REG_SOUNDCNT_X = 0x084,
 	REG_SOUNDBIAS = 0x088,
-	REG_WAVE_RAM0_LO = 0x090,
+	REG_WAVE_RAM0_LO = 0x090, // 2 bits each, for a total of 16 bits?    They must be 8 bits each, for 64 total bits: 2 32 bit banks
 	REG_WAVE_RAM0_HI = 0x092,
 	REG_WAVE_RAM1_LO = 0x094,
 	REG_WAVE_RAM1_HI = 0x096,

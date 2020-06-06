@@ -62,7 +62,7 @@ void GBAudioInit(struct GBAudio* audio, size_t samples, uint8_t* nr52, enum GBAu
 	audio->masterVolume = GB_AUDIO_VOLUME_MAX;
 	audio->nr52 = nr52;
 	audio->style = style;
-	if (style == GB_AUDIO_GBA) {
+	if (style == GB_AUDIO_GBA || style == GB_AUDIO_AGB) {
 		audio->timingFactor = 4;
 	} else {
 		audio->timingFactor = 1;
@@ -122,34 +122,98 @@ void GBAudioReset(struct GBAudio* audio) {
 	audio->ch3 = (struct GBAudioWaveChannel) { .bank = 0 };
 	audio->ch4 = (struct GBAudioNoiseChannel) { .nSamples = 0 };
 	// TODO: DMG randomness
-	audio->ch3.wavedata8[0] = 0x00;
-	audio->ch3.wavedata8[1] = 0xFF;
-	audio->ch3.wavedata8[2] = 0x00;
-	audio->ch3.wavedata8[3] = 0xFF;
-	audio->ch3.wavedata8[4] = 0x00;
-	audio->ch3.wavedata8[5] = 0xFF;
-	audio->ch3.wavedata8[6] = 0x00;
-	audio->ch3.wavedata8[7] = 0xFF;
-	audio->ch3.wavedata8[8] = 0x00;
-	audio->ch3.wavedata8[9] = 0xFF;
-	audio->ch3.wavedata8[10] = 0x00;
-	audio->ch3.wavedata8[11] = 0xFF;
-	audio->ch3.wavedata8[12] = 0x00;
-	audio->ch3.wavedata8[13] = 0xFF;
-	audio->ch3.wavedata8[14] = 0x00;
-	audio->ch3.wavedata8[15] = 0xFF;
-	audio->ch4 = (struct GBAudioNoiseChannel) { .envelope = { .dead = 2 } };
-	audio->frame = 0;
-	audio->sampleInterval = 128;
-	audio->lastLeft = 0;
-	audio->lastRight = 0;
-	audio->capLeft = 0;
-	audio->capRight = 0;
-	audio->clock = 0;
-	audio->playingCh1 = false;
-	audio->playingCh2 = false;
-	audio->playingCh3 = false;
-	audio->playingCh4 = false;
+	// Inserted for AGB Audio
+	switch (audio->style) {
+	case GB_AUDIO_DMG:
+		audio->ch3.wavedata8[0] = 0x00;
+		audio->ch3.wavedata8[1] = 0xFF;
+		audio->ch3.wavedata8[2] = 0x00;
+		audio->ch3.wavedata8[3] = 0xFF;
+		audio->ch3.wavedata8[4] = 0x00;
+		audio->ch3.wavedata8[5] = 0xFF;
+		audio->ch3.wavedata8[6] = 0x00;
+		audio->ch3.wavedata8[7] = 0xFF;
+		audio->ch3.wavedata8[8] = 0x00;
+		audio->ch3.wavedata8[9] = 0xFF;
+		audio->ch3.wavedata8[10] = 0x00;
+		audio->ch3.wavedata8[11] = 0xFF;
+		audio->ch3.wavedata8[12] = 0x00;
+		audio->ch3.wavedata8[13] = 0xFF;
+		audio->ch3.wavedata8[14] = 0x00;
+		audio->ch3.wavedata8[15] = 0xFF;
+		audio->ch4 = (struct GBAudioNoiseChannel) { .envelope = { .dead = 2 } };
+		audio->frame = 0;
+		audio->sampleInterval = 128;
+		audio->lastLeft = 0;
+		audio->lastRight = 0;
+		audio->capLeft = 0;
+		audio->capRight = 0;
+		audio->clock = 0;
+		audio->playingCh1 = false;
+		audio->playingCh2 = false;
+		audio->playingCh3 = false;
+		audio->playingCh4 = false;
+		break;
+	case GB_Audio_AGB:
+		audio->ch3.wavedata2[0][0] = 0x00;
+		audio->ch3.wavedata2[0][1] = 0xFF;
+		audio->ch3.wavedata2[0][2] = 0x00;
+		audio->ch3.wavedata2[0][3] = 0xFF:
+		audio->ch3.wavedata2[0][4] = 0x00;
+		audio->ch3.wavedata2[0][5] = 0xFF;
+		audio->ch3.wavedata2[0][6] = 0x00;
+		audio->ch3.wavedata2[0][7] = 0xFF;
+		audio->ch3.wavedata2[1][0] = 0x00;
+		audio->ch3.wavedata2[1][1] = 0xFF;
+		audio->ch3.wavedata2[1][2] = 0x00;
+		audio->ch3.wavedata2[1][3] = 0xFF;
+		audio->ch3.wavedata2[1][4] = 0x00;
+		audio->ch3.wavedata2[1][5] = 0xFF;
+		audio->ch3.wavedata2[1][6] = 0x00;
+		audio->ch3.wavedata2[1][7] = 0xFF;
+		// 64-bit bank
+		audio->ch3.wavedata32[0] = 0x0000;
+		audio->ch3.wavedata32[1] = 0xFFFF;
+		audio->ch3.wavedata32[2] = 0x0000;
+		audio->ch3.wavedata32[3] = 0xFFFF;
+		audio->ch3.wavedata32[4] = 0x0000;
+		audio->ch3.wavedata32[5] = 0xFFFF;
+		audio->ch3.wavedata32[6] = 0x0000;
+		audio->ch3.wavedata32[7] = 0xFFFF;
+		audio->ch3.bankMode = 1;
+		audio->ch3.bankNum = 0;
+		break;
+	default:
+		audio->ch3.wavedata8[0] = 0x00;
+		audio->ch3.wavedata8[1] = 0xFF;
+		audio->ch3.wavedata8[2] = 0x00;
+		audio->ch3.wavedata8[3] = 0xFF;
+		audio->ch3.wavedata8[4] = 0x00;
+		audio->ch3.wavedata8[5] = 0xFF;
+		audio->ch3.wavedata8[6] = 0x00;
+		audio->ch3.wavedata8[7] = 0xFF;
+		audio->ch3.wavedata8[8] = 0x00;
+		audio->ch3.wavedata8[9] = 0xFF;
+		audio->ch3.wavedata8[10] = 0x00;
+		audio->ch3.wavedata8[11] = 0xFF;
+		audio->ch3.wavedata8[12] = 0x00;
+		audio->ch3.wavedata8[13] = 0xFF;
+		audio->ch3.wavedata8[14] = 0x00;
+		audio->ch3.wavedata8[15] = 0xFF;
+		audio->ch4 = (struct GBAudioNoiseChannel) { .envelope = { .dead = 2 } };
+		audio->frame = 0;
+		audio->sampleInterval = 128;
+		audio->lastLeft = 0;
+		audio->lastRight = 0;
+		audio->capLeft = 0;
+		audio->capRight = 0;
+		audio->clock = 0;
+		audio->playingCh1 = false;
+		audio->playingCh2 = false;
+		audio->playingCh3 = false;
+		audio->playingCh4 = false;
+		break;
+	}
 	if (audio->p && !(audio->p->model & GB_MODEL_SGB)) {
 		audio->playingCh1 = true;
 		audio->enable = true;
@@ -283,10 +347,17 @@ void GBAudioWriteNR30(struct GBAudio* audio, uint8_t value) {
 		audio->playingCh3 = false;
 		*audio->nr52 &= ~0x0004;
 	}
+	if (audio->style == GB_AUDIO_AGB || audio->style == GB_AUDIO_GBA) {
+		audio->ch3.bankMode = (value >> 5) & 1;
+		audio->ch3.bankNum = (value >> 6) & 1;
+	}
 }
 
 void GBAudioWriteNR31(struct GBAudio* audio, uint8_t value) {
 	audio->ch3.length = 256 - value;
+	if (audio->style == GB_AUDIO_AGB) {
+		
+	}
 }
 
 void GBAudioWriteNR32(struct GBAudio* audio, uint8_t value) {
@@ -310,12 +381,14 @@ void GBAudioWriteNR34(struct GBAudio* audio, uint8_t value) {
 		}
 	}
 	bool wasEnable = audio->playingCh3;
+
+	// Seems to be deal with the 8th bit
 	if (GBAudioRegisterControlIsRestart(value << 8)) {
 		audio->playingCh3 = audio->ch3.enable;
-		if (!audio->ch3.length) {
+		if (!audio->ch3.length) { // If NR31 (sound length) == 0
 			audio->ch3.length = 256;
 			if (audio->ch3.stop && !(audio->frame & 1)) {
-				--audio->ch3.length;
+				--audio->ch3.length; //Count the counter?
 			}
 		}
 
@@ -336,6 +409,8 @@ void GBAudioWriteNR34(struct GBAudio* audio, uint8_t value) {
 	}
 	mTimingDeschedule(audio->timing, &audio->ch3Fade);
 	mTimingDeschedule(audio->timing, &audio->ch3Event);
+	
+
 	if (audio->playingCh3) {
 		audio->ch3.readable = audio->style != GB_AUDIO_DMG;
 		// TODO: Where does this cycle delay come from?
@@ -876,6 +951,15 @@ static void _updateChannel3(struct mTiming* timing, void* user, uint32_t cyclesL
 	int end;
 	switch (audio->style) {
 	case GB_AUDIO_DMG:
+	case GB_AUDIO_AGB:
+		++ch->window;
+		ch->window &= 0x1F;
+		ch->sample = ch->wavedata2[ch->bankNum][ch->window >> 1];
+		if (!(ch->window & 1)){
+			ch->sample >>= 4;
+		}
+		ch->sample &= 0xF;
+		break;
 	default:
 		++ch->window;
 		ch->window &= 0x1F;
@@ -885,7 +969,7 @@ static void _updateChannel3(struct mTiming* timing, void* user, uint32_t cyclesL
 		}
 		ch->sample &= 0xF;
 		break;
-	case GB_AUDIO_GBA:
+	case GB_AUDIO_GBA:           // This seems like the code where I should add in the 2nd bank option? That just means I need to figure out how to implement it...
 		if (ch->size) {
 			start = 7;
 			end = 0;

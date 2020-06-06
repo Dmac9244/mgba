@@ -52,7 +52,7 @@ struct GBAAudioMixer;
 struct GBAAudio {
 	struct GBA* p;
 
-	struct GBAudio psg;
+	struct GBAudio psg;       //psg seems to be the way that GBA uses GB Audio. Any reference to gba->psg. ... means that the code is referencing GBA's instance of GBAudio.
 	struct GBAAudioFIFO chA;
 	struct GBAAudioFIFO chB;
 
@@ -298,6 +298,7 @@ void GBAAudioWriteSOUNDCNT_X(struct GBAAudio* audio, uint16_t value);
 void GBAAudioWriteSOUNDBIAS(struct GBAAudio* audio, uint16_t value);
 
 void GBAAudioWriteWaveRAM(struct GBAAudio* audio, int address, uint32_t value);
+void GBAAudioWriteBankedWaveRAM(struct GBAAudio* audio, int address, uint16_t value); // Added for GBA 2-bank Audio
 void GBAAudioWriteFIFO(struct GBAAudio* audio, int address, uint32_t value);
 void GBAAudioSampleFIFO(struct GBAAudio* audio, int fifoId, int32_t cycles);
 
